@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import Navbar from './components/frontend/Navbar';
 import Home from './components/frontend/Home';
 import Marketplace from './components/frontend/Marketplace';
@@ -10,13 +10,13 @@ import Cart from './components/frontend/Cart';
 import Details from './components/frontend/Details';
 import NewBook from './components/frontend/NewBook';
 import Checkout from './components/frontend/Checkout';
-
 function App() {
   return (
     <Router>
       <Navbar />
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<Navigate to="/home" replace />} />
+        <Route path="/home" element={<Home />} />
         <Route path="/marketplace" element={<Marketplace />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/about" element={<AboutUs />} />
