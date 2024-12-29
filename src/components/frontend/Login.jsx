@@ -1,16 +1,31 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import { Link } from 'react-router-dom';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  
-  
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle login logic here (e.g., sending to backend)
-    console.log({ email, password });
+
+    const userData = { email, password };
+
+    try {
+      const response = await axios.post('http://localhost:5174/api/user/login', userData);
+
+      if (response.status === 200) {
+        // Store token and login status
+        localStorage.setItem('authToken', response.data.token);
+        localStorage.setItem('isLoggedIn', 'true'); // Set login status to true
+        navigate('/home');  // Redirect to the home page or dashboard
+      }
+    } catch (error) {
+      setError(error.response?.data?.message || "Invalid email or password");
+    }
   };
 
   return (
@@ -23,6 +38,9 @@ const Login = () => {
           <p className="text-gray-600 mb-6 text-center">
             Explore, share, and build your bookshelf with us.
           </p>
+
+          {error && <p className="text-red-500 text-center">{error}</p>} {/* Display error message */}
+
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
@@ -59,7 +77,7 @@ const Login = () => {
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
               Don't have an account?{' '}
-              <Link to="/signup" className="text-yellow-900 font-medium hover:underline ">
+              <Link to="/signup" className="text-yellow-900 font-medium hover:underline">
                 Sign up now
               </Link>
             </p>
