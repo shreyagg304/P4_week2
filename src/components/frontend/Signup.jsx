@@ -1,20 +1,47 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios'; // Import axios
 
 const SignUp = () => {
-  const [name, setName] = useState(''); // Added state for name
+  const navigate = useNavigate(); // Use useNavigate for navigation
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Check if passwords match
     if (password !== confirmPassword) {
       alert("Passwords don't match!");
       return;
     }
-    // Handle signup (sending to backend, etc.)
-    console.log({ name, email, password });
+
+    // Create the user data object
+    const userData = {
+      name,
+      email,
+      password,
+    };
+
+    try {
+      // Send a POST request to the backend to sign up the user
+      const response = await axios.post('http://localhost:5174/api/user/signup', userData);
+
+      if (response.data.success) {
+        // If successful, navigate to login page
+        alert('Signup successful!');
+        navigate('/login');
+      } else {
+        // If there was an error, show the error message
+        alert(response.data.message);
+      }
+    } catch (error) {
+      // Handle any errors that occur during the request
+      console.error("There was an error signing up:", error);
+      alert('An error occurred while signing up. Please try again.');
+    }
   };
 
   return (
@@ -37,7 +64,7 @@ const SignUp = () => {
                 id="name"
                 className="w-full px-4 py-2 border rounded-md"
                 value={name}
-                onChange={(e) => setName(e.target.value)} // Fixed this
+                onChange={(e) => setName(e.target.value)}
                 required
                 placeholder="Enter your name"
               />
@@ -91,9 +118,9 @@ const SignUp = () => {
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
               Already have an account?{' '}
-              <Link to="/login" className="text-yellow-900 font-medium hover:underline">
+              <a href="/login" className="text-yellow-900 font-medium hover:underline">
                 Login now
-              </Link>
+              </a>
             </p>
           </div>
         </div>
